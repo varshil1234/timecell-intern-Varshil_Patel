@@ -1,0 +1,16 @@
+# Security: Never commit API keys
+.env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments (if you use them)
+venv/
+.venv/
+env/
+
+# OS generated files
+.DS_Store
+Thumbs.db
