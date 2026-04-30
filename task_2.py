@@ -57,13 +57,14 @@ async def main():
     assets = [
         {"name": "NIFTY 50", "symbol": "^NSEI", "fallback_currency": "INR"},
         {"name": "Reliance Ind.", "symbol": "RELIANCE.NS", "fallback_currency": "INR"},
+        {"name": "Fake Coin (Error)", "symbol": "INVALID_XYZ", "fallback_currency": "USD"},
         {"name": "Bitcoin", "symbol": "BTC-USD", "fallback_currency": "USD"},
         {"name": "Fake Coin (Error)", "symbol": "INVALID_XYZ", "fallback_currency": "USD"}
     ]
 
     # 2. Print Table Header
     print("\n" + "=" * 80)
-    print("⚡ TIMECELL ASYNC MARKET DATA ENGINE")
+    print("ASYNC MARKET DATA ENGINE")
     print("=" * 80)
     print(f"{'Asset Name':<25} | {'Current Price':>15} | {'Currency':<8} | {'Timestamp'}")
     print("-" * 80)

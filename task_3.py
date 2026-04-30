@@ -72,7 +72,6 @@ class PortfolioExplainer:
         1. Only use the numbers I provide in the metrics. Do not invent or recalculate anything.
         2. You must explicitly mention their 'runway_months' from the metrics in your summary.
         3. Be honest but professional.
-    
         """
 
         prompt = f"""
@@ -85,17 +84,34 @@ class PortfolioExplainer:
 
         print(f"[*] Generating '{tone}' AI explanation...")
         
-        # --- PHASE 2: API CALL ---
-        response = self.client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                system_instruction=system_instruction,
-                response_mime_type="application/json",
-                response_schema=PortfolioAnalysis,
-                temperature=0.3 
-            ),
-        )
+        # --- PHASE 2: API CALL (WITH EXPONENTIAL BACKOFF) ---
+        max_retries = 3
+        response = None
+        
+        for attempt in range(max_retries):
+            try:
+                response = self.client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=system_instruction,
+                        response_mime_type="application/json",
+                        response_schema=PortfolioAnalysis,
+                        temperature=0.3 
+                    ),
+                )
+                break  # If successful, exit the retry loop immediately
+                
+            except Exception as e:
+                error_msg = str(e)
+                if "503" in error_msg or "429" in error_msg:
+                    wait_time = 5 * (attempt + 1)
+                    print(f"   [!] API overloaded during generation (Attempt {attempt+1}/{max_retries}). Retrying in {wait_time}s...")
+                    time.sleep(wait_time)
+                    if attempt == max_retries - 1:
+                        raise RuntimeError("Failed to generate explanation: API remains unavailable.")
+                else:
+                    raise e
         
         # --- PHASE 3: OUTPUT PARSING ---
         # Delegating the raw text to our dedicated parsing method
@@ -146,7 +162,7 @@ class PortfolioExplainer:
                 error_msg = str(e)
                 if "503" in error_msg or "429" in error_msg:
                     wait_time = 5 * (attempt + 1)
-                    print(f"   [!] API overloaded (Attempt {attempt+1}/{max_retries}). Retrying in {wait_time}s...")
+                    print(f"   [!] API overloaded during critique (Attempt {attempt+1}/{max_retries}). Retrying in {wait_time}s...")
                     time.sleep(wait_time)
                 else:
                     raise e
