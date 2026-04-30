@@ -1,7 +1,7 @@
 
 
 ## Overview
-Hey team, here is my submission for the Timecell Engineering Assessment.
+This is my submission for TimeCell Assignment.
 
 ---
 
