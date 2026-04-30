@@ -60,7 +60,26 @@ I also used **Pydantic Structured Outputs** (`response_schema`). I didn't trust 
 
 ---
 
-### How to Run It
-1. Install requirements: `pip install yfinance google-genai pydantic python-dotenv`
-2. Create a `.env` file in the root directory and add `GEMINI_API_KEY=your_actual_key_here`
-3. Run the scripts directly (e.g., `python task_3.py`)
+## Task 4:Triangular Arbitrage Engine
+
+**Objective:** Build something interesting that demonstrates initiative and how I think about the wealth management problem space.
+
+### What I Built
+I built a real-time **Triangular Arbitrage Engine** using graph theory (specifically a modified Bellman-Ford algorithm) to hunt for multi-hop, risk-free yield loops across financial assets.
+
+### Why I Built It & How I Approached It
+
+1.When tasked with building a financial tool, the obvious route is a simple price tracker or a 2-exchange comparison script (e.g., checking BTC on Coinbase vs. Binance). I wanted to build something that required actual computer science fundamentals. 
+I treated the market as a **Directed Graph**. By taking the negative natural logarithm (`-log(price)`) of exchange rates, I transformed a multiplicative financial problem into an additive shortest-path problem. The engine doesn't just look at two assets; it scans the entire interconnected market matrix for Negative Weight Cycles—which represent literal mathematical profit loops.
+
+
+2.Traditional wealth management (like Task 1 and 3) is largely defensive—tracking burn rates and stress-testing crashes. But family offices and quant funds are also obsessed with active, risk-free yield (Alpha). While High-Frequency Trading (HFT) bots usually close real-world arbitrage gaps in milliseconds, building the *architecture* for this proves I understand the mathematical plumbing required for high-performance quantitative trading pipelines.
+
+
+3.The script doesn't just do theory. It uses `asyncio` to fetch live data from `yfinance` in parallel. 
+However, because real markets are brutally efficient, it's rare to catch a live 5% arbitrage gap while just running a CLI script. To prove the algorithm's execution actually works, I engineered an `ENABLE_SYNTHETIC_INEFFICIENCY` toggle. When set to `True`, the script injects a fake pricing error into the live data stream. You can watch the Bellman-Ford algorithm successfully detect the anomaly, backtrack through the predecessor array to isolate the exact trade route, filter out duplicate loops, and print a ranked profitability leaderboard. 
+
+---
+
+### Final Thoughts
+This assessment was a lot of fun.
